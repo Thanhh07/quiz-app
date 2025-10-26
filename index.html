@@ -3,425 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thi Trắc Nghiệm Online</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
-            width: 100%;
-            padding: 40px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .home-screen, .quiz-screen, .result-screen {
-            display: none;
-        }
-
-        .active {
-            display: block;
-        }
-
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .file-upload {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .file-upload:hover {
-            background: #f8f9ff;
-            border-color: #764ba2;
-        }
-
-        .file-upload input {
-            display: none;
-        }
-
-        .file-upload label {
-            cursor: pointer;
-            color: #667eea;
-            font-size: 1.2em;
-            display: block;
-        }
-
-        .format-info {
-            background: #f8f9ff;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .format-info h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .format-info pre {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            font-size: 0.9em;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .question-container {
-            margin-bottom: 30px;
-        }
-
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
-        }
-
-        .question-number {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .question-text {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .answers {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .answer-option {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .answer-option:hover {
-            background: #eef0ff;
-            transform: translateX(5px);
-        }
-
-        .answer-option.selected {
-            background: #667eea;
-            color: white;
-            border-color: #764ba2;
-        }
-
-        .answer-option.correct {
-            background: #10b981;
-            color: white;
-            border-color: #059669;
-        }
-
-        .answer-option.incorrect {
-            background: #ef4444;
-            color: white;
-            border-color: #dc2626;
-        }
-
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-
-        .score-card {
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-
-        .score-card h2 {
-            color: white;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        .score-number {
-            font-size: 4em;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-
-        .result-details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .detail-card {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .detail-card .number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .detail-card .label {
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .wrong-answers {
-            margin-top: 30px;
-        }
-
-        .wrong-answer-item {
-            background: #fff5f5;
-            border-left: 4px solid #ef4444;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .wrong-answer-item .question {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .wrong-answer-item .info {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: #eee;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
-        }
-
-        .copy-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-left: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .copy-btn:hover {
-            background: #059669;
-            transform: scale(1.05);
-        }
-
-        .history-section {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #eee;
-        }
-
-        .history-item {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .history-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .history-score {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .history-date {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .history-stats {
-            display: flex;
-            gap: 20px;
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .clear-history-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .clear-history-btn:hover {
-            background: #dc2626;
-        }
-
-        .format-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 1000;
-            animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .result-details {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Thi Trắc Nghiệm Online - Vật lý Y Sinh</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -431,38 +15,110 @@
             
             <div class="format-info">
                 <div class="format-header">
-                    <h3>📋 Định dạng file JSON:</h3>
-                    <button class="copy-btn" onclick="copyJsonFormat()">📋 Copy định dạng</button>
+                    <h3>📋 Định dạng file JSON (Đã nâng cấp):</h3>
+                    <button class="copy-btn" onclick="app.copyJsonFormat(event)">📋 Copy</button>
                 </div>
                 <pre id="jsonFormat">{
   "questions": [
     {
-      "question": "Câu hỏi của bạn?",
-      "answers": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-      "correct": 0
+      "id": "VL_2024_001",
+      "topic": "Cơ học",
+      "question": "Tính năng lượng: $E = mc^2$?",
+      "answers": [
+        "$3 \\times 10^8$ m/s",
+        "$9 \\times 10^{16}$ J"
+      ],
+      "correct": 0,
+      "explanation": "Theo thuyết tương đối..."
     }
   ]
 }</pre>
-                <p style="margin-top: 10px; color: #666;"><strong>Lưu ý:</strong> "correct" là chỉ số đáp án đúng (bắt đầu từ 0)</p>
+                <p style="margin-top: 10px; color: #666;">
+                    <strong>Lưu ý:</strong> Hỗ trợ LaTeX (KaTeX), "correct" là chỉ số đáp án đúng (bắt đầu từ 0)
+                </p>
             </div>
 
             <div class="file-upload" onclick="document.getElementById('fileInput').click()">
                 <input type="file" id="fileInput" accept=".json">
-                <label for="fileInput">
+                <label>
                     📁 Nhấp để chọn file câu hỏi (JSON)<br>
                     <span id="fileName" style="font-size: 0.9em; color: #999;">Chưa chọn file</span>
                 </label>
             </div>
 
-            <div style="text-align: center;">
-                <button class="btn" id="startBtn" disabled>Bắt đầu thi</button>
+            <!-- Cài đặt -->
+            <div class="settings-section">
+                <h3 style="color: #667eea; margin-bottom: 20px;">⚙️ Cài đặt</h3>
+                
+                <div class="settings-row">
+                    <span class="settings-label">🌙 Chế độ tối</span>
+                    <div class="toggle-switch" id="darkModeToggle" onclick="app.toggleDarkMode()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <span class="settings-label">⏱️ Bật đếm giờ</span>
+                    <div class="toggle-switch" id="timerToggle" onclick="app.toggleTimer()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <span class="settings-label">⏰ Thời gian (phút)</span>
+                    <input type="number" class="time-input" id="timeLimit" value="30" min="1" max="180">
+                </div>
+
+                <div class="settings-row">
+                    <span class="settings-label">🔀 Trộn câu hỏi</span>
+                    <div class="toggle-switch" id="shuffleToggle" onclick="app.toggleShuffle()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <span class="settings-label">🎯 Trộn đáp án</span>
+                    <div class="toggle-switch" id="shuffleAnswersToggle" onclick="app.toggleShuffleAnswers()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Lịch sử làm bài -->
+            <!-- Lọc chủ đề -->
+            <div class="settings-section" style="margin-top: 20px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">🎯 Lọc theo chủ đề</h3>
+                <select id="topicFilter" class="topic-select">
+                    <option value="all">Tất cả chủ đề</option>
+                </select>
+                <div id="topicStats" style="margin-top: 10px; font-size: 0.9em; color: #666;"></div>
+            </div>
+
+            <!-- Hướng dẫn phím tắt -->
+            <div class="settings-section" style="margin-top: 20px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">⌨️ Phím tắt</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 0.9em;">
+                    <div>◀️ ▶️ <span style="color: #666;">Di chuyển câu</span></div>
+                    <div>🔼 🔽 <span style="color: #666;">Chọn đáp án</span></div>
+                    <div>1-4 / A-D <span style="color: #666;">Chọn A/B/C/D</span></div>
+                    <div>B <span style="color: #666;">Bookmark</span></div>
+                    <div>Enter <span style="color: #666;">Nộp bài</span></div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" id="startBtn" disabled onclick="app.startQuiz()">Bắt đầu thi</button>
+            </div>
+
+            <!-- Lịch sử -->
             <div class="history-section" id="historySection" style="display: none;">
                 <h3 style="color: #667eea; margin-bottom: 20px;">📚 Lịch sử làm bài</h3>
+                <div class="filter-buttons" id="filterButtons"></div>
                 <div id="historyContainer"></div>
-                <button class="clear-history-btn" onclick="clearHistory()">🗑️ Xóa lịch sử</button>
+                <div style="margin-top: 15px;">
+                    <button class="clear-history-btn" onclick="app.clearHistory()">🗑️ Xóa lịch sử</button>
+                    <button class="export-btn" onclick="app.exportHistory('csv')">📥 Xuất CSV</button>
+                    <button class="export-btn" onclick="app.exportHistory('json')">📥 Xuất JSON</button>
+                </div>
             </div>
         </div>
 
@@ -470,23 +126,45 @@
         <div class="quiz-screen">
             <h1>📝 Làm bài thi</h1>
             
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-icon">📊</span>
+                    <span id="progressText">0/0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">✅</span>
+                    <span id="answeredCount">Đã trả lời: 0</span>
+                </div>
+                <div class="stat-item" id="timerDisplay" style="display: none;">
+                    <span class="stat-icon">⏱️</span>
+                    <span id="timer"></span>
+                </div>
+            </div>
+
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
 
+            <details open style="margin-bottom: 20px;">
+                <summary style="cursor: pointer; font-weight: bold; color: #667eea; margin-bottom: 10px;">
+                    🗺️ Điều hướng câu hỏi
+                </summary>
+                <div class="question-nav" id="questionNav"></div>
+            </details>
+
             <div class="question-container">
                 <div class="question-header">
                     <span class="question-number" id="questionNumber"></span>
-                    <span id="timer" style="color: #ef4444; font-weight: bold;"></span>
+                    <button class="bookmark-btn" id="bookmarkBtn" onclick="app.toggleBookmark()">☆</button>
                 </div>
                 <div class="question-text" id="questionText"></div>
                 <div class="answers" id="answersContainer"></div>
             </div>
 
             <div class="navigation">
-                <button class="btn" id="prevBtn">← Câu trước</button>
-                <button class="btn" id="nextBtn">Câu sau →</button>
-                <button class="btn" id="submitBtn" style="display: none;">Nộp bài</button>
+                <button class="btn" id="prevBtn" onclick="app.prevQuestion()">← Câu trước</button>
+                <button class="btn" id="nextBtn" onclick="app.nextQuestion()">Câu sau →</button>
+                <button class="btn" id="submitBtn" style="display: none;" onclick="app.submitQuiz()">Nộp bài</button>
             </div>
         </div>
 
@@ -518,333 +196,49 @@
             <div id="wrongAnswersSection"></div>
 
             <div class="action-buttons">
-                <button class="btn" id="retryWrongBtn" style="display: none;">🔄 Làm lại câu sai</button>
-                <button class="btn" id="retryAllBtn">🔁 Làm lại toàn bộ</button>
-                <button class="btn" id="homeBtn">🏠 Về trang chủ</button>
+                <button class="btn" id="reviewBtn" onclick="app.reviewAnswers()">👁️ Xem lại đáp án</button>
+                <button class="btn" id="retryWrongBtn" style="display: none;" onclick="app.retryWrong()">🔄 Làm lại câu sai</button>
+                <button class="btn" onclick="app.retryAll()">📝 Làm lại toàn bộ</button>
+                <button class="btn" onclick="app.goHome()">🏠 Về trang chủ</button>
+            </div>
+        </div>
+
+        <!-- Màn hình Review -->
+        <div class="review-screen">
+            <h1>👁️ Xem lại đáp án</h1>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-icon">📊</span>
+                    <span id="reviewProgressText">0/0</span>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="reviewProgressBar"></div>
+            </div>
+
+            <div class="question-nav" id="reviewQuestionNav"></div>
+
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number" id="reviewQuestionNumber"></span>
+                </div>
+                <div class="question-text" id="reviewQuestionText"></div>
+                <div class="answers" id="reviewAnswersContainer"></div>
+                <div class="explanation" id="reviewExplanation" style="display: none;"></div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn" id="reviewPrevBtn" onclick="app.prevReviewQuestion()">← Câu trước</button>
+                <button class="btn" id="reviewNextBtn" onclick="app.nextReviewQuestion()">Câu sau →</button>
+                <button class="btn" onclick="app.exitReview()">Đóng xem lại</button>
             </div>
         </div>
     </div>
 
-    <script>
-        let questions = [];
-        let currentQuestionIndex = 0;
-        let userAnswers = [];
-        let wrongQuestions = [];
-        let isRetryMode = false;
-        let history = [];
-
-        // Load history từ bộ nhớ khi trang được tải
-        window.addEventListener('load', () => {
-            loadHistory();
-            displayHistory();
-        });
-
-        // Xử lý file upload
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('fileName').textContent = file.name;
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    try {
-                        const data = JSON.parse(event.target.result);
-                        if (data.questions && Array.isArray(data.questions)) {
-                            questions = data.questions;
-                            document.getElementById('startBtn').disabled = false;
-                            alert('✅ Tải file thành công! ' + questions.length + ' câu hỏi.');
-                        } else {
-                            alert('❌ File không đúng định dạng!');
-                        }
-                    } catch (error) {
-                        alert('❌ Lỗi đọc file: ' + error.message);
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        // Bắt đầu thi
-        document.getElementById('startBtn').addEventListener('click', startQuiz);
-
-        function startQuiz() {
-            currentQuestionIndex = 0;
-            userAnswers = new Array(questions.length).fill(null);
-            showScreen('quiz-screen');
-            displayQuestion();
-        }
-
-        // Hiển thị câu hỏi
-        function displayQuestion() {
-            const q = questions[currentQuestionIndex];
-            document.getElementById('questionNumber').textContent = `Câu ${currentQuestionIndex + 1}/${questions.length}`;
-            document.getElementById('questionText').textContent = q.question;
-            
-            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-
-            const answersContainer = document.getElementById('answersContainer');
-            answersContainer.innerHTML = '';
-            
-            q.answers.forEach((answer, index) => {
-                const div = document.createElement('div');
-                div.className = 'answer-option';
-                if (userAnswers[currentQuestionIndex] === index) {
-                    div.classList.add('selected');
-                }
-                div.textContent = answer;
-                div.addEventListener('click', () => selectAnswer(index));
-                answersContainer.appendChild(div);
-            });
-
-            // Cập nhật nút điều hướng
-            document.getElementById('prevBtn').style.display = currentQuestionIndex > 0 ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').style.display = currentQuestionIndex < questions.length - 1 ? 'inline-block' : 'none';
-            document.getElementById('submitBtn').style.display = currentQuestionIndex === questions.length - 1 ? 'inline-block' : 'none';
-        }
-
-        // Chọn đáp án
-        function selectAnswer(index) {
-            userAnswers[currentQuestionIndex] = index;
-            displayQuestion();
-        }
-
-        // Nút điều hướng
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                displayQuestion();
-            }
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                displayQuestion();
-            }
-        });
-
-        document.getElementById('submitBtn').addEventListener('click', submitQuiz);
-
-        // Nộp bài
-        function submitQuiz() {
-            if (userAnswers.includes(null)) {
-                if (!confirm('⚠️ Bạn chưa trả lời hết các câu hỏi. Bạn có muốn nộp bài không?')) {
-                    return;
-                }
-            }
-
-            let correctCount = 0;
-            wrongQuestions = [];
-
-            questions.forEach((q, index) => {
-                if (userAnswers[index] === q.correct) {
-                    correctCount++;
-                } else {
-                    wrongQuestions.push({
-                        index: index,
-                        question: q.question,
-                        userAnswer: userAnswers[index] !== null ? q.answers[userAnswers[index]] : 'Không trả lời',
-                        correctAnswer: q.answers[q.correct]
-                    });
-                }
-            });
-
-            const score = (correctCount / questions.length * 10).toFixed(2);
-            
-            // Lưu vào lịch sử
-            if (!isRetryMode) {
-                const historyItem = {
-                    date: new Date().toLocaleString('vi-VN'),
-                    timestamp: Date.now(),
-                    score: score,
-                    total: questions.length,
-                    correct: correctCount,
-                    wrong: wrongQuestions.length
-                };
-                history.unshift(historyItem);
-                saveHistory();
-            }
-            
-            // Hiển thị kết quả
-            document.getElementById('scoreDisplay').textContent = score;
-            document.getElementById('totalQuestions').textContent = questions.length;
-            document.getElementById('correctAnswers').textContent = correctCount;
-            document.getElementById('wrongAnswers').textContent = wrongQuestions.length;
-
-            let message = '';
-            if (score >= 8) message = '🌟 Xuất sắc!';
-            else if (score >= 6.5) message = '👍 Khá tốt!';
-            else if (score >= 5) message = '😊 Trung bình';
-            else message = '💪 Cố gắng hơn nhé!';
-            document.getElementById('scoreMessage').textContent = message;
-
-            // Hiển thị danh sách câu sai
-            const wrongSection = document.getElementById('wrongAnswersSection');
-            if (wrongQuestions.length > 0) {
-                wrongSection.innerHTML = '<div class="wrong-answers"><h3 style="color: #ef4444; margin-bottom: 15px;">❌ Các câu trả lời sai:</h3></div>';
-                const wrongContainer = wrongSection.querySelector('.wrong-answers');
-                
-                wrongQuestions.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'wrong-answer-item';
-                    div.innerHTML = `
-                        <div class="question">Câu ${item.index + 1}: ${item.question}</div>
-                        <div class="info">❌ Bạn chọn: ${item.userAnswer}</div>
-                        <div class="info" style="color: #10b981;">✅ Đáp án đúng: ${item.correctAnswer}</div>
-                    `;
-                    wrongContainer.appendChild(div);
-                });
-
-                document.getElementById('retryWrongBtn').style.display = 'inline-block';
-            } else {
-                wrongSection.innerHTML = '';
-                document.getElementById('retryWrongBtn').style.display = 'none';
-            }
-
-            showScreen('result-screen');
-        }
-
-        // Làm lại câu sai
-        document.getElementById('retryWrongBtn').addEventListener('click', () => {
-            questions = wrongQuestions.map(item => questions[item.index]);
-            isRetryMode = true;
-            startQuiz();
-        });
-
-        // Làm lại toàn bộ
-        document.getElementById('retryAllBtn').addEventListener('click', () => {
-            if (isRetryMode) {
-                alert('⚠️ Vui lòng tải lại file câu hỏi để làm lại toàn bộ.');
-                showScreen('home-screen');
-            } else {
-                startQuiz();
-            }
-        });
-
-        // Về trang chủ
-        document.getElementById('homeBtn').addEventListener('click', () => {
-            showScreen('home-screen');
-            isRetryMode = false;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('fileName').textContent = 'Chưa chọn file';
-            document.getElementById('startBtn').disabled = true;
-            displayHistory();
-        });
-
-        // Chuyển màn hình
-        function showScreen(screenClass) {
-            document.querySelectorAll('.home-screen, .quiz-screen, .result-screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.querySelector('.' + screenClass).classList.add('active');
-        }
-
-// Copy định dạng JSON
-        function copyJsonFormat(event) {
-            const text = document.getElementById('jsonFormat').textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                // Hiển thị toast notification
-                showToast('📋 Đã copy định dạng JSON!');
-                
-                // Hiệu ứng nút
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '✅ Đã copy!';
-                btn.style.background = '#059669';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                }, 2000);
-            }).catch(err => {
-                showToast('❌ Không thể copy!', 'error');
-            });
-        }
-
-        // Hiển thị thông báo toast
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            if (type === 'error') {
-                toast.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-            }
-            toast.innerHTML = `
-                <span style="font-size: 1.2em;">${type === 'success' ? '✅' : '❌'}</span>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        // Lưu lịch sử vào bộ nhớ
-        function saveHistory() {
-            // Giới hạn 20 bài gần nhất
-            if (history.length > 20) {
-                history = history.slice(0, 20);
-            }
-            try {
-                const historyData = JSON.stringify(history);
-                sessionStorage.setItem('quizHistory', historyData);
-            } catch (e) {
-                console.log('Không thể lưu lịch sử:', e);
-            }
-        }
-
-        // Load lịch sử từ bộ nhớ
-        function loadHistory() {
-            try {
-                const saved = sessionStorage.getItem('quizHistory');
-                if (saved) {
-                    history = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.log('Không thể load lịch sử:', e);
-                history = [];
-            }
-        }
-
-        // Hiển thị lịch sử
-        function displayHistory() {
-            const container = document.getElementById('historyContainer');
-            const section = document.getElementById('historySection');
-            
-            if (history.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            section.style.display = 'block';
-            container.innerHTML = '';
-
-            history.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <div class="history-header">
-                        <div class="history-score">${item.score} điểm</div>
-                        <div class="history-date">${item.date}</div>
-                    </div>
-                    <div class="history-stats">
-                        <span>📊 Tổng: ${item.total} câu</span>
-                        <span style="color: #10b981;">✅ Đúng: ${item.correct}</span>
-                        <span style="color: #ef4444;">❌ Sai: ${item.wrong}</span>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // Xóa lịch sử
-        function clearHistory() {
-            if (confirm('⚠️ Bạn có chắc muốn xóa toàn bộ lịch sử làm bài?')) {
-                history = [];
-                saveHistory();
-                displayHistory();
-                alert('✅ Đã xóa lịch sử!');
-            }
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
