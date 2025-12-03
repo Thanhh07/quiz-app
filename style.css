@@ -1015,3 +1015,21 @@ body.dark-mode .floating-stats .stat-label {
         padding: 15px;
     }
 }
+/* SMART PASTE STYLES */
+#smartPasteInput {
+    transition: all 0.3s ease;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#smartPasteInput:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+body.dark-mode #smartPasteInput {
+    background: #0f3460;
+    color: #e0e0e0;
+    border-color: #667eea;
+}
