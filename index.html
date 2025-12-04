@@ -6,6 +6,7 @@
     <title>Thi Trắc Nghiệm Online - Vật lý Y Sinh</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -59,10 +60,10 @@ B. 3"
     </div>
 </div>
             <div class="file-upload" onclick="document.getElementById('fileInput').click()">
-                <input type="file" id="fileInput" accept=".json">
+                <input type="file" id="fileInput" accept=".json, .docx">
                 <label>
-                    📁 Nhấp để chọn file câu hỏi (JSON)<br>
-                    <span id="fileName" style="font-size: 0.9em; color: #999;">Chưa chọn file</span>
+                📁 Chọn file JSON hoặc Word (.docx)<br>
+                <span id="fileName" style="font-size: 0.9em; color: #999;">Chưa chọn file</span>
                 </label>
             </div>
 
