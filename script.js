@@ -238,6 +238,10 @@ const QuizApp = (function() {
     // FILE HANDLING
     // ===================================
     
+   // ===================================
+    // FILE HANDLING (ĐÃ NÂNG CẤP DOCX)
+    // ===================================
+    
     function setupFileUpload() {
         const fileInput = document.getElementById('fileInput');
         
@@ -253,7 +257,63 @@ const QuizApp = (function() {
             
             document.getElementById('fileName').textContent = file.name;
             const reader = new FileReader();
+
+            // -----------------------------------------
+            // XỬ LÝ FILE WORD (.DOCX)
+            // -----------------------------------------
+            if (file.name.toLowerCase().endsWith('.docx')) {
+                reader.onload = (event) => {
+                    const arrayBuffer = event.target.result;
+                    
+                    // Dùng Mammoth để trích xuất văn bản thô (Raw Text)
+                    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                        .then(displayResult)
+                        .catch(handleError);
+                    
+                    function displayResult(result) {
+                        const text = result.value; // Nội dung văn bản từ file Word
+                        
+                        try {
+                            // Tái sử dụng hàm phân tích thông minh chúng ta đã viết
+                            const questions = parseTextToQuestions(text);
+                            
+                            if (questions.length === 0) {
+                                throw new Error('Không tìm thấy câu hỏi nào trong file Word!');
+                            }
+
+                            // Cập nhật dữ liệu vào App
+                            state.allQuestions = questions;
+                            state.originalQuestions = JSON.parse(JSON.stringify(questions));
+                            
+                            // Build map và update giao diện
+                            state.questionMap.clear();
+                            state.allQuestions.forEach(q => state.questionMap.set(q.id, q));
+                            
+                            updateTopicFilter();
+                            document.getElementById('startBtn').disabled = false;
+                            
+                            // Tự động bắt đầu thi luôn
+                            startQuiz();
+                            showToast(`✅ Đã tải ${questions.length} câu hỏi từ file Word!`);
+                            
+                        } catch (err) {
+                            showToast('❌ Lỗi xử lý: ' + err.message, 'error');
+                        }
+                    }
+
+                    function handleError(err) {
+                        showToast('❌ Lỗi đọc file Word', 'error');
+                        console.error(err);
+                    }
+                };
+                
+                reader.readAsArrayBuffer(file);
+                return; // Dừng lại, không chạy logic JSON bên dưới
+            }
             
+            // -----------------------------------------
+            // XỬ LÝ FILE JSON (CŨ)
+            // -----------------------------------------
             reader.onload = (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
@@ -308,7 +368,6 @@ const QuizApp = (function() {
             reader.readAsText(file);
         });
     }
-
     // ===================================
     // TOPIC FILTERING
     // ===================================
