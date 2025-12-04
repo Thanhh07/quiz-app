@@ -47,9 +47,19 @@ const QuizApp = (function() {
     }
 
     function parseTextToQuestions(text) {
+        // BƯỚC 1: Dọn dẹp dữ liệu rác từ file (các thẻ )
+        text = text.replace(/\/g, '');
+
+        // BƯỚC 2: Xử lý ĐÁP ÁN DÍNH LIỀN (Quan trọng)
+        // Tìm các ký tự như " B.", " C.", "*D." nằm giữa dòng và ép xuống dòng mới
+        // Regex: Tìm khoảng trắng + (có thể có dấu *) + A/B/C/D + dấu chấm/ngoặc + khoảng trắng
+        text = text.replace(/([^\n])\s+([\*]?[A-D][\.\)])\s+/g, "$1\n$2 ");
+        
+        // Chạy lại lần 2 để xử lý trường hợp dính chùm liên tiếp như "A. ... B. ... C. ..."
+        text = text.replace(/([^\n])\s+([\*]?[A-D][\.\)])\s+/g, "$1\n$2 ");
+
         const questions = [];
-        // Regex để tách các khối câu hỏi. 
-        // Nó tìm các dòng bắt đầu bằng "Câu X:", "Bài X:", hoặc "1." ...
+        // Regex tách câu hỏi (giữ nguyên logic cũ)
         const rawBlocks = text.split(/\n+(?=(?:Câu\s+\d+|Bài\s+\d+|Question\s+\d+|\d+\.)[:\.\s])/i);
 
         rawBlocks.forEach((block, index) => {
@@ -57,38 +67,41 @@ const QuizApp = (function() {
             if (!block) return;
 
             const lines = block.split('\n').map(l => l.trim()).filter(l => l);
-            if (lines.length < 2) return; // Bỏ qua nếu không đủ dòng (phải có hỏi và đáp án)
+            if (lines.length < 2) return; 
 
-            // Dòng 1 là câu hỏi. Xóa bỏ phần "Câu 1:" ở đầu cho gọn
+            // Lấy nội dung câu hỏi (dòng đầu tiên)
             const questionText = lines[0].replace(/^(Câu\s+\d+|Bài\s+\d+|Question\s+\d+|\d+)[:\.\s]*/i, '').trim();
             
             const answers = [];
-            let correctIndex = 0; // Mặc định là A nếu quên đánh dấu
-            let answerLines = lines.slice(1); // Các dòng còn lại là đáp án
+            let correctIndex = 0; 
+            
+            // Lấy các dòng còn lại làm đáp án
+            let answerLines = lines.slice(1); 
 
-            // Duyệt qua các dòng đáp án
-            answerLines.forEach((line, idx) => {
-                // Kiểm tra xem dòng này có phải đáp án đúng không (có dấu *)
+            answerLines.forEach((line) => {
+                // Kiểm tra dấu * để xác định câu đúng
                 let isCorrect = line.startsWith('*');
                 
-                // Xóa các ký tự thừa như "A.", "*", "B)" ở đầu dòng
-                let cleanContent = line.replace(/^[\*\-\+]?\s*(?:[A-D][\.\)]|[0-9][\.\)])\s*/i, '').trim();
+                // Làm sạch text đáp án (xóa A., B., *, ...)
+                // Regex này chấp nhận cả "A.", "A)", "1.", "1)"
+                let cleanContent = line.replace(/^[\*\-\+]?\s*(?:[A-D]|[0-9])[\.\)]\s*/i, '').trim();
                 
-                // Nếu dòng bắt đầu bằng dấu *, xóa dấu * đi
-                if (line.startsWith('*')) {
-                    cleanContent = line.substring(1).trim().replace(/^(?:[A-D][\.\)]|[0-9][\.\)])\s*/i, '').trim();
+                // Nếu vẫn còn dính dấu * ở đầu (do trường hợp *A.)
+                if (cleanContent.startsWith('*')) {
+                     cleanContent = cleanContent.substring(1).trim();
                 }
 
                 if (cleanContent) {
                     answers.push(cleanContent);
-                    if (isCorrect) correctIndex = idx;
+                    if (isCorrect) correctIndex = answers.length - 1; // Cập nhật index dựa trên độ dài mảng hiện tại
                 }
             });
 
+            // Chỉ lấy câu hỏi có từ 2 đáp án trở lên
             if (answers.length >= 2) {
                 questions.push({
                     id: `PASTE_${Date.now()}_${index}`,
-                    topic: "Tự soạn", // Mặc định topic
+                    topic: "Tự soạn",
                     question: questionText,
                     answers: answers,
                     correct: correctIndex,
@@ -1177,3 +1190,4 @@ window.addEventListener('DOMContentLoaded', () => {
     window.app = QuizApp;
     QuizApp.init();
 });
+
