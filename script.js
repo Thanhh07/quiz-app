@@ -47,8 +47,7 @@ const QuizApp = (function() {
     }
 
     function parseTextToQuestions(text) {
-        // BƯỚC 1: Dọn dẹp dữ liệu rác từ file (các thẻ )
-        text = text.replace(/\/g, '');
+        
 
         // BƯỚC 2: Xử lý ĐÁP ÁN DÍNH LIỀN (Quan trọng)
         // Tìm các ký tự như " B.", " C.", "*D." nằm giữa dòng và ép xuống dòng mới
@@ -1190,4 +1189,5 @@ window.addEventListener('DOMContentLoaded', () => {
     window.app = QuizApp;
     QuizApp.init();
 });
+
 
