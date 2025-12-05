@@ -47,66 +47,79 @@ const QuizApp = (function() {
     }
 
     function parseTextToQuestions(text) {
-        // --- XỬ LÝ LÀM SẠCH FILE 2.DOCX ---
-        
-        // 1. Xóa sạch các thẻ gây nhiễu
-        text = text.replace(/\;/g, ' '); 
+        // ==========================================
+        // GIAI ĐOẠN 1: TẨY RỬA DỮ LIỆU (DEEP CLEAN)
+        // ==========================================
 
-        // 2. Xử lý các đáp án bị dính liền (Ví dụ: *A. 4,15B. 3,35 -> Tách xuống dòng)
-        // Tìm chữ cái A,B,C,D có dấu chấm, đứng sau khoảng trắng, và ép xuống dòng
-        text = text.replace(/(\s+)([\*]?[A-D][\.\)])/g, "\n$2");
-        
-        // Chạy lại lần nữa để tách các trường hợp dính chùm 3-4 đáp án
-        text = text.replace(/(\s+)([\*]?[A-D][\.\)])/g, "\n$2");
+        // 1. Xóa triệt để mọi thẻ (bất kể bên trong là số hay chữ)
+        // Regex này tìm: 
+        text = text.replace(/\]*\]/g, ' ');
 
+        // 2. Xóa các ký tự điều khiển lạ hoặc khoảng trắng thừa ở đầu/cuối
+        text = text.trim();
+
+        // 3. Tách đáp án dính liền (Quan trọng nhất cho file của bạn)
+        // Ví dụ: "*A. ĐúngB. Sai" -> sẽ bị cắt xuống dòng
+        // Chạy lặp lại 3 lần để đảm bảo tách rời hoàn toàn A, B, C, D
+        for (let i = 0; i < 3; i++) {
+            text = text.replace(/([^\n])\s+([\*]?[A-D][\.\)])/g, "$1\n$2");
+        }
+
+        // ==========================================
+        // GIAI ĐOẠN 2: PHÂN TÍCH CẤU TRÚC
+        // ==========================================
+        
         const questions = [];
-        // Regex tách từng câu hỏi dựa trên từ khóa "Câu 1:", "Câu 2:"...
+        // Tách câu hỏi dựa trên từ khóa đứng đầu dòng (Câu, Bài, Question...)
         const rawBlocks = text.split(/\n+(?=(?:Câu\s+\d+|Bài\s+\d+|Question\s+\d+|\d+\.)[:\.\s])/i);
 
         rawBlocks.forEach((block, index) => {
             block = block.trim();
             if (!block) return;
 
+            // Tách các dòng
             const lines = block.split('\n').map(l => l.trim()).filter(l => l);
             if (lines.length < 2) return; 
 
-            // Dòng 1 là tên câu hỏi
+            // Dòng đầu tiên chắc chắn là câu hỏi
+            // Xóa các tiền tố như "Câu 1:", "1." để lấy nội dung sạch
             const questionText = lines[0].replace(/^(Câu\s+\d+|Bài\s+\d+|Question\s+\d+|\d+)[:\.\s]*/i, '').trim();
             
             const answers = [];
-            let correctIndex = 0; 
+            let correctIndex = 0; // Mặc định là A nếu không tìm thấy sao
             
-            // Các dòng còn lại là đáp án
+            // Các dòng còn lại là đáp án hoặc giải thích
             let answerLines = lines.slice(1); 
 
             answerLines.forEach((line) => {
-                // Kiểm tra dấu * ở đầu để xác định đáp án đúng (từ file gốc)
+                // Kiểm tra dấu * (đáp án đúng từ file gốc)
                 let isCorrect = line.startsWith('*');
                 
-                // Xóa ký tự A. B. C. D. và dấu * đi để lấy nội dung sạch
+                // Làm sạch ký tự đầu dòng (A. B. C. D. hoặc *)
+                // Regex này giữ lại nội dung đáp án
                 let cleanContent = line.replace(/^[\*\-\+]?\s*(?:[A-D]|[0-9])[\.\)]\s*/i, '').trim();
                 
-                // Nếu vẫn còn dính dấu * do sót
+                // Xử lý sót dấu * nếu có
                 if (cleanContent.startsWith('*')) {
                      cleanContent = cleanContent.substring(1).trim();
                 }
 
+                // Chỉ thêm vào nếu có nội dung
                 if (cleanContent) {
                     answers.push(cleanContent);
-                    // Nếu dòng này có dấu *, đánh dấu đây là câu đúng
                     if (isCorrect) correctIndex = answers.length - 1; 
                 }
             });
 
-            // Chỉ nhận câu hỏi có ít nhất 2 đáp án
+            // Chỉ chấp nhận câu hỏi có ít nhất 2 đáp án để tránh lỗi hiển thị
             if (answers.length >= 2) {
                 questions.push({
                     id: `DOC_${Date.now()}_${index}`,
-                    topic: "Tự soạn",
+                    topic: "Tự soạn", // Bạn có thể sửa thành tên file nếu muốn
                     question: questionText,
                     answers: answers,
                     correct: correctIndex,
-                    explanation: ""
+                    explanation: "" // File của bạn có phần giải thích, có thể nâng cấp để lấy sau
                 });
             }
         });
