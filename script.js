@@ -47,18 +47,20 @@ const QuizApp = (function() {
     }
 
     function parseTextToQuestions(text) {
+        // --- XỬ LÝ LÀM SẠCH FILE 2.DOCX ---
         
+        // 1. Xóa sạch các thẻ gây nhiễu
+        text = text.replace(/\;/g, ' '); 
 
-        // BƯỚC 2: Xử lý ĐÁP ÁN DÍNH LIỀN (Quan trọng)
-        // Tìm các ký tự như " B.", " C.", "*D." nằm giữa dòng và ép xuống dòng mới
-        // Regex: Tìm khoảng trắng + (có thể có dấu *) + A/B/C/D + dấu chấm/ngoặc + khoảng trắng
-        text = text.replace(/([^\n])\s+([\*]?[A-D][\.\)])\s+/g, "$1\n$2 ");
+        // 2. Xử lý các đáp án bị dính liền (Ví dụ: *A. 4,15B. 3,35 -> Tách xuống dòng)
+        // Tìm chữ cái A,B,C,D có dấu chấm, đứng sau khoảng trắng, và ép xuống dòng
+        text = text.replace(/(\s+)([\*]?[A-D][\.\)])/g, "\n$2");
         
-        // Chạy lại lần 2 để xử lý trường hợp dính chùm liên tiếp như "A. ... B. ... C. ..."
-        text = text.replace(/([^\n])\s+([\*]?[A-D][\.\)])\s+/g, "$1\n$2 ");
+        // Chạy lại lần nữa để tách các trường hợp dính chùm 3-4 đáp án
+        text = text.replace(/(\s+)([\*]?[A-D][\.\)])/g, "\n$2");
 
         const questions = [];
-        // Regex tách câu hỏi (giữ nguyên logic cũ)
+        // Regex tách từng câu hỏi dựa trên từ khóa "Câu 1:", "Câu 2:"...
         const rawBlocks = text.split(/\n+(?=(?:Câu\s+\d+|Bài\s+\d+|Question\s+\d+|\d+\.)[:\.\s])/i);
 
         rawBlocks.forEach((block, index) => {
@@ -68,38 +70,38 @@ const QuizApp = (function() {
             const lines = block.split('\n').map(l => l.trim()).filter(l => l);
             if (lines.length < 2) return; 
 
-            // Lấy nội dung câu hỏi (dòng đầu tiên)
+            // Dòng 1 là tên câu hỏi
             const questionText = lines[0].replace(/^(Câu\s+\d+|Bài\s+\d+|Question\s+\d+|\d+)[:\.\s]*/i, '').trim();
             
             const answers = [];
             let correctIndex = 0; 
             
-            // Lấy các dòng còn lại làm đáp án
+            // Các dòng còn lại là đáp án
             let answerLines = lines.slice(1); 
 
             answerLines.forEach((line) => {
-                // Kiểm tra dấu * để xác định câu đúng
+                // Kiểm tra dấu * ở đầu để xác định đáp án đúng (từ file gốc)
                 let isCorrect = line.startsWith('*');
                 
-                // Làm sạch text đáp án (xóa A., B., *, ...)
-                // Regex này chấp nhận cả "A.", "A)", "1.", "1)"
+                // Xóa ký tự A. B. C. D. và dấu * đi để lấy nội dung sạch
                 let cleanContent = line.replace(/^[\*\-\+]?\s*(?:[A-D]|[0-9])[\.\)]\s*/i, '').trim();
                 
-                // Nếu vẫn còn dính dấu * ở đầu (do trường hợp *A.)
+                // Nếu vẫn còn dính dấu * do sót
                 if (cleanContent.startsWith('*')) {
                      cleanContent = cleanContent.substring(1).trim();
                 }
 
                 if (cleanContent) {
                     answers.push(cleanContent);
-                    if (isCorrect) correctIndex = answers.length - 1; // Cập nhật index dựa trên độ dài mảng hiện tại
+                    // Nếu dòng này có dấu *, đánh dấu đây là câu đúng
+                    if (isCorrect) correctIndex = answers.length - 1; 
                 }
             });
 
-            // Chỉ lấy câu hỏi có từ 2 đáp án trở lên
+            // Chỉ nhận câu hỏi có ít nhất 2 đáp án
             if (answers.length >= 2) {
                 questions.push({
-                    id: `PASTE_${Date.now()}_${index}`,
+                    id: `DOC_${Date.now()}_${index}`,
                     topic: "Tự soạn",
                     question: questionText,
                     answers: answers,
